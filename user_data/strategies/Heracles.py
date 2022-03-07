@@ -92,8 +92,6 @@ class Heracles(IStrategy):
         """
         Buy strategy Hyperopt will build and use.
         """
-        conditions = []
-
         IND = 'volatility_dcp'
         CRS = 'volatility_kcw'
         DFIND = dataframe[IND]
@@ -102,11 +100,9 @@ class Heracles(IStrategy):
         d = DFIND.shift(self.buy_indicator_shift.value).div(
             DFCRS.shift(self.buy_crossed_indicator_shift.value))
 
-        # print(d.min(), "\t", d.max())
-        conditions.append(
-            d.between(self.buy_div_min.value, self.buy_div_max.value))
-
-        if conditions:
+        if conditions := [
+            d.between(self.buy_div_min.value, self.buy_div_max.value)
+        ]:
             dataframe.loc[
                 reduce(lambda x, y: x & y, conditions),
                 'buy']=1

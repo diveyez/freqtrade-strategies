@@ -58,18 +58,35 @@ class GodStraHo(IHyperOpt):
         """
         Define your Hyperopt space for searching buy strategy parameters.
         """
-        gene = list()
+        gene = []
 
         for i in range(DNA_SIZE):
-            gene.append(Categorical(GodGenes, name=f'buy-indicator-{i}'))
-            gene.append(Categorical(GodGenes, name=f'buy-cross-{i}'))
-            gene.append(Integer(-1, 101, name=f'buy-int-{i}'))
-            gene.append(Real(-1.1, 1.1, name=f'buy-real-{i}'))
-            # Operations
-            # CA: Crossed Above, CB: Crossed Below,
-            # I: Integer, R: Real, D: Disabled
-            gene.append(Categorical(["D", ">", "<", "=", "CA", "CB",
-                                     ">I", "=I", "<I", ">R", "=R", "<R"], name=f'buy-oper-{i}'))
+            gene.extend(
+                (
+                    Categorical(GodGenes, name=f'buy-indicator-{i}'),
+                    Categorical(GodGenes, name=f'buy-cross-{i}'),
+                    Integer(-1, 101, name=f'buy-int-{i}'),
+                    Real(-1.1, 1.1, name=f'buy-real-{i}'),
+                    Categorical(
+                        [
+                            "D",
+                            ">",
+                            "<",
+                            "=",
+                            "CA",
+                            "CB",
+                            ">I",
+                            "=I",
+                            "<I",
+                            ">R",
+                            "=R",
+                            "<R",
+                        ],
+                        name=f'buy-oper-{i}',
+                    ),
+                )
+            )
+
         return gene
 
     @staticmethod
@@ -130,18 +147,35 @@ class GodStraHo(IHyperOpt):
         """
         Define your Hyperopt space for searching sell strategy parameters.
         """
-        gene = list()
+        gene = []
 
         for i in range(DNA_SIZE):
-            gene.append(Categorical(GodGenes, name=f'sell-indicator-{i}'))
-            gene.append(Categorical(GodGenes, name=f'sell-cross-{i}'))
-            gene.append(Integer(-1, 101, name=f'sell-int-{i}'))
-            gene.append(Real(-0.01, 1.01, name=f'sell-real-{i}'))
-            # Operations
-            # CA: Crossed Above, CB: Crossed Below,
-            # I: Integer, R: Real, D: Disabled
-            gene.append(Categorical(["D", ">", "<", "=", "CA", "CB",
-                                     ">I", "=I", "<I", ">R", "=R", "<R"], name=f'sell-oper-{i}'))
+            gene.extend(
+                (
+                    Categorical(GodGenes, name=f'sell-indicator-{i}'),
+                    Categorical(GodGenes, name=f'sell-cross-{i}'),
+                    Integer(-1, 101, name=f'sell-int-{i}'),
+                    Real(-0.01, 1.01, name=f'sell-real-{i}'),
+                    Categorical(
+                        [
+                            "D",
+                            ">",
+                            "<",
+                            "=",
+                            "CA",
+                            "CB",
+                            ">I",
+                            "=I",
+                            "<I",
+                            ">R",
+                            "=R",
+                            "<R",
+                        ],
+                        name=f'sell-oper-{i}',
+                    ),
+                )
+            )
+
         return gene
 
     @ staticmethod

@@ -57,11 +57,12 @@ class MultiMa(IStrategy):
         for i in self.buy_ma_count.range:
             if i > 1:
                 shift = self.buy_ma_shift.value
-                for shift in self.buy_ma_shift.range:
-                    conditions.append(
-                        dataframe[f"buy-ma-{i}"].shift(shift)
-                        > dataframe[f"buy-ma-{i-1}"].shift(shift)
-                    )
+                conditions.extend(
+                    dataframe[f"buy-ma-{i}"].shift(shift)
+                    > dataframe[f"buy-ma-{i-1}"].shift(shift)
+                    for shift in self.buy_ma_shift.range
+                )
+
         if conditions:
             dataframe.loc[reduce(lambda x, y: x & y, conditions), "buy"] = 1
 
@@ -78,11 +79,12 @@ class MultiMa(IStrategy):
         for i in self.sell_ma_count.range:
             if i > 1:
                 shift = self.sell_ma_shift.value
-                for shift in self.sell_ma_shift.range:
-                    conditions.append(
-                        dataframe[f"sell-ma-{i}"].shift(shift)
-                        < dataframe[f"sell-ma-{i-1}"].shift(shift)
-                    )
+                conditions.extend(
+                    dataframe[f"sell-ma-{i}"].shift(shift)
+                    < dataframe[f"sell-ma-{i-1}"].shift(shift)
+                    for shift in self.sell_ma_shift.range
+                )
+
         if conditions:
             dataframe.loc[reduce(lambda x, y: x & y, conditions), "sell"] = 1
         return dataframe

@@ -123,16 +123,14 @@ class Diamond(IStrategy):
         return dataframe
 
     def populate_buy_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        conditions = []
-        conditions.append(
-            qtpylib.crossed_above
-            (
-                dataframe[self.buy_fast_key.value].shift(self.buy_horizontal_push.value),
-                dataframe[self.buy_slow_key.value] * self.buy_vertical_push.value
+        if conditions := [
+            qtpylib.crossed_above(
+                dataframe[self.buy_fast_key.value].shift(
+                    self.buy_horizontal_push.value
+                ),
+                dataframe[self.buy_slow_key.value] * self.buy_vertical_push.value,
             )
-        )
-
-        if conditions:
+        ]:
             dataframe.loc[
                 reduce(lambda x, y: x & y, conditions),
                 'buy']=1
@@ -140,15 +138,15 @@ class Diamond(IStrategy):
         return dataframe
 
     def populate_sell_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        conditions = []
-        conditions.append(
-            qtpylib.crossed_below
-            (
-                dataframe[self.sell_fast_key.value].shift(self.sell_horizontal_push.value),
-                dataframe[self.sell_slow_key.value] * self.sell_vertical_push.value
+        if conditions := [
+            qtpylib.crossed_below(
+                dataframe[self.sell_fast_key.value].shift(
+                    self.sell_horizontal_push.value
+                ),
+                dataframe[self.sell_slow_key.value]
+                * self.sell_vertical_push.value,
             )
-        )
-        if conditions:
+        ]:
             dataframe.loc[
                 reduce(lambda x, y: x & y, conditions),
                 'sell']=1

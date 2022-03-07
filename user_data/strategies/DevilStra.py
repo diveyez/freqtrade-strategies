@@ -351,54 +351,53 @@ def gene_calculator(dataframe, indicator):
         # print(f"{indicator}, calculated befoure")
         # print(len(dataframe.keys()))
         return dataframe[indicator]
-    else:
-        result = None
-        # For Pattern Recognations
-        if gene_len == 1:
-            # print('gene_len == 1\t', indicator)
-            result = getattr(ta, gene_name)(
-                dataframe
-            )
-            return normalize(result)
-        elif gene_len == 2:
-            # print('gene_len == 2\t', indicator)
-            gene_timeperiod = int(gene[1])
-            result = getattr(ta, gene_name)(
-                dataframe,
-                timeperiod=gene_timeperiod,
-            )
-            return normalize(result)
-        # For
-        elif gene_len == 3:
-            # print('gene_len == 3\t', indicator)
-            gene_timeperiod = int(gene[2])
-            gene_index = int(gene[1])
-            result = getattr(ta, gene_name)(
-                dataframe,
-                timeperiod=gene_timeperiod,
-            ).iloc[:, gene_index]
-            return normalize(result)
-        # For trend operators(MA-5-SMA-4)
-        elif gene_len == 4:
-            # print('gene_len == 4\t', indicator)
-            gene_timeperiod = int(gene[1])
-            sharp_indicator = f'{gene_name}-{gene_timeperiod}'
-            dataframe[sharp_indicator] = getattr(ta, gene_name)(
-                dataframe,
-                timeperiod=gene_timeperiod,
-            )
-            return normalize(ta.SMA(dataframe[sharp_indicator].fillna(0), TREND_CHECK_CANDLES))
-        # For trend operators(STOCH-0-4-SMA-4)
-        elif gene_len == 5:
-            # print('gene_len == 5\t', indicator)
-            gene_timeperiod = int(gene[2])
-            gene_index = int(gene[1])
-            sharp_indicator = f'{gene_name}-{gene_index}-{gene_timeperiod}'
-            dataframe[sharp_indicator] = getattr(ta, gene_name)(
-                dataframe,
-                timeperiod=gene_timeperiod,
-            ).iloc[:, gene_index]
-            return normalize(ta.SMA(dataframe[sharp_indicator].fillna(0), TREND_CHECK_CANDLES))
+    result = None
+    # For Pattern Recognations
+    if gene_len == 1:
+        # print('gene_len == 1\t', indicator)
+        result = getattr(ta, gene_name)(
+            dataframe
+        )
+        return normalize(result)
+    elif gene_len == 2:
+        # print('gene_len == 2\t', indicator)
+        gene_timeperiod = int(gene[1])
+        result = getattr(ta, gene_name)(
+            dataframe,
+            timeperiod=gene_timeperiod,
+        )
+        return normalize(result)
+    # For
+    elif gene_len == 3:
+        # print('gene_len == 3\t', indicator)
+        gene_timeperiod = int(gene[2])
+        gene_index = int(gene[1])
+        result = getattr(ta, gene_name)(
+            dataframe,
+            timeperiod=gene_timeperiod,
+        ).iloc[:, gene_index]
+        return normalize(result)
+    # For trend operators(MA-5-SMA-4)
+    elif gene_len == 4:
+        # print('gene_len == 4\t', indicator)
+        gene_timeperiod = int(gene[1])
+        sharp_indicator = f'{gene_name}-{gene_timeperiod}'
+        dataframe[sharp_indicator] = getattr(ta, gene_name)(
+            dataframe,
+            timeperiod=gene_timeperiod,
+        )
+        return normalize(ta.SMA(dataframe[sharp_indicator].fillna(0), TREND_CHECK_CANDLES))
+    # For trend operators(STOCH-0-4-SMA-4)
+    elif gene_len == 5:
+        # print('gene_len == 5\t', indicator)
+        gene_timeperiod = int(gene[2])
+        gene_index = int(gene[1])
+        sharp_indicator = f'{gene_name}-{gene_index}-{gene_timeperiod}'
+        dataframe[sharp_indicator] = getattr(ta, gene_name)(
+            dataframe,
+            timeperiod=gene_timeperiod,
+        ).iloc[:, gene_index]
+        return normalize(ta.SMA(dataframe[sharp_indicator].fillna(0), TREND_CHECK_CANDLES))
 
 
 def condition_generator(dataframe, operator, indicator, crossed_indicator, real_num):
@@ -602,7 +601,6 @@ class DevilStra(IStrategy):
         buy_params_index = buy_spells[pair_index]
 
         params = spell_finder(buy_params_index, 'buy')
-        conditions = list()
         # TODO: Its not dry code!
         buy_indicator = params['buy_indicator0']
         buy_crossed_indicator = params['buy_crossed_indicator0']
@@ -615,7 +613,7 @@ class DevilStra(IStrategy):
             buy_crossed_indicator,
             buy_real_num
         )
-        conditions.append(condition)
+        conditions = [condition]
         # backup
         buy_indicator = params['buy_indicator1']
         buy_crossed_indicator = params['buy_crossed_indicator1']
@@ -673,7 +671,6 @@ class DevilStra(IStrategy):
 
         params = spell_finder(sell_params_index, 'sell')
 
-        conditions = list()
         # TODO: Its not dry code!
         sell_indicator = params['sell_indicator0']
         sell_crossed_indicator = params['sell_crossed_indicator0']
@@ -686,8 +683,7 @@ class DevilStra(IStrategy):
             sell_crossed_indicator,
             sell_real_num
         )
-        conditions.append(condition)
-
+        conditions = [condition]
         sell_indicator = params['sell_indicator1']
         sell_crossed_indicator = params['sell_crossed_indicator1']
         sell_operator = params['sell_operator1']

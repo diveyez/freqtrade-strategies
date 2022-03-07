@@ -94,12 +94,13 @@ class ReinforcedSmoothScalp(IStrategy):
         if self.buy_adx_enabled.value:
             conditions.append(dataframe['adx'] > self.buy_adx.value)
 
-        # Some static conditions which always apply
-        conditions.append(qtpylib.crossed_above(dataframe['fastk'], dataframe['fastd']))
-        conditions.append(dataframe['resample_sma'] < dataframe['close'])
-
-        # Check that volume is not 0
-        conditions.append(dataframe['volume'] > 0)
+        conditions.extend(
+            (
+                qtpylib.crossed_above(dataframe['fastk'], dataframe['fastd']),
+                dataframe['resample_sma'] < dataframe['close'],
+                dataframe['volume'] > 0,
+            )
+        )
 
         if conditions:
             dataframe.loc[
@@ -110,10 +111,7 @@ class ReinforcedSmoothScalp(IStrategy):
 
     def populate_sell_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
 
-        conditions = []
-
-        # Some static conditions which always apply
-        conditions.append(dataframe['open'] > dataframe['ema_high'])
+        conditions = [dataframe['open'] > dataframe['ema_high']]
 
         if self.sell_mfi_enabled.value:
             conditions.append(dataframe['mfi'] > self.sell_mfi.value)

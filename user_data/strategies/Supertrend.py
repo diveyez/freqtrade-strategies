@@ -142,8 +142,8 @@ class Supertrend(IStrategy):
         df['TR'] = ta.TRANGE(df)
         df['ATR'] = ta.SMA(df['TR'], period)
 
-        st = 'ST_' + str(period) + '_' + str(multiplier)
-        stx = 'STX_' + str(period) + '_' + str(multiplier)
+        st = f'ST_{str(period)}_{str(multiplier)}'
+        stx = f'STX_{str(period)}_{str(multiplier)}'
 
         # Compute basic upper and lower bands
         df['basic_ub'] = (df['high'] + df['low']) / 2 + multiplier * df['ATR']

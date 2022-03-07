@@ -69,7 +69,7 @@ class InformativeSample(IStrategy):
                             ("BTC/USDT", "15m"),
                             ]
         """
-        return [(f"BTC/USDT", '15m')]
+        return [("BTC/USDT", '15m')]
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         """
@@ -86,8 +86,7 @@ class InformativeSample(IStrategy):
         if self.dp:
             # Get ohlcv data for informative pair at 15m interval.
             inf_tf = '15m'
-            informative = self.dp.get_pair_dataframe(pair=f"BTC/USDT",
-                                                     timeframe=inf_tf)
+            informative = self.dp.get_pair_dataframe(pair="BTC/USDT", timeframe=inf_tf)
 
             # calculate SMA20 on informative pair
             informative['sma20'] = informative['close'].rolling(20).mean()

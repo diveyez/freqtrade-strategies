@@ -172,12 +172,21 @@ class Strategy005(IStrategy):
 
         conditions = []
         if self.sell_trigger.value == 'rsi-macd-minusdi':
-            conditions.append(qtpylib.crossed_above(dataframe['rsi'], self.sell_rsi.value))
-            conditions.append(dataframe['macd'] < 0)
-            conditions.append(dataframe['minus_di'] > self.sell_minusDI.value)
+            conditions.extend(
+                (
+                    qtpylib.crossed_above(dataframe['rsi'], self.sell_rsi.value),
+                    dataframe['macd'] < 0,
+                    dataframe['minus_di'] > self.sell_minusDI.value,
+                )
+            )
+
         if self.sell_trigger.value == 'sar-fisherRsi':
-            conditions.append(dataframe['sar'] > dataframe['close'])
-            conditions.append(dataframe['fisher_rsi'] > self.sell_fishRsiNorma.value)
+            conditions.extend(
+                (
+                    dataframe['sar'] > dataframe['close'],
+                    dataframe['fisher_rsi'] > self.sell_fishRsiNorma.value,
+                )
+            )
 
         if conditions:
             dataframe.loc[reduce(lambda x, y: x & y, conditions), 'sell'] = 1

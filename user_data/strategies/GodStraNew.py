@@ -236,20 +236,21 @@ DECIMALS = 1
 god_genes = list(god_genes)
 # print('selected indicators for optimzatin: \n', god_genes)
 
-god_genes_with_timeperiod = list()
+god_genes_with_timeperiod = []
 for god_gene in god_genes:
-    for timeperiod in timeperiods:
-        god_genes_with_timeperiod.append(f'{god_gene}-{timeperiod}')
+    god_genes_with_timeperiod.extend(
+        f'{god_gene}-{timeperiod}' for timeperiod in timeperiods
+    )
 
 # Let give somethings to CatagoricalParam to Play with them
 # When just one thing is inside catagorical lists
 # TODO: its Not True Way :)
 if len(god_genes) == 1:
-    god_genes = god_genes*2
+    god_genes *= 2
 if len(timeperiods) == 1:
-    timeperiods = timeperiods*2
+    timeperiods *= 2
 if len(operators) == 1:
-    operators = operators*2
+    operators *= 2
 
 
 def normalize(df):
@@ -275,54 +276,53 @@ def gene_calculator(dataframe, indicator):
         # print(f"{indicator}, calculated befoure")
         # print(len(dataframe.keys()))
         return dataframe[indicator]
-    else:
-        result = None
-        # For Pattern Recognations
-        if gene_len == 1:
-            # print('gene_len == 1\t', indicator)
-            result = getattr(ta, gene_name)(
-                dataframe
-            )
-            return normalize(result)
-        elif gene_len == 2:
-            # print('gene_len == 2\t', indicator)
-            gene_timeperiod = int(gene[1])
-            result = getattr(ta, gene_name)(
-                dataframe,
-                timeperiod=gene_timeperiod,
-            )
-            return normalize(result)
-        # For
-        elif gene_len == 3:
-            # print('gene_len == 3\t', indicator)
-            gene_timeperiod = int(gene[2])
-            gene_index = int(gene[1])
-            result = getattr(ta, gene_name)(
-                dataframe,
-                timeperiod=gene_timeperiod,
-            ).iloc[:, gene_index]
-            return normalize(result)
-        # For trend operators(MA-5-SMA-4)
-        elif gene_len == 4:
-            # print('gene_len == 4\t', indicator)
-            gene_timeperiod = int(gene[1])
-            sharp_indicator = f'{gene_name}-{gene_timeperiod}'
-            dataframe[sharp_indicator] = getattr(ta, gene_name)(
-                dataframe,
-                timeperiod=gene_timeperiod,
-            )
-            return normalize(ta.SMA(dataframe[sharp_indicator].fillna(0), TREND_CHECK_CANDLES))
-        # For trend operators(STOCH-0-4-SMA-4)
-        elif gene_len == 5:
-            # print('gene_len == 5\t', indicator)
-            gene_timeperiod = int(gene[2])
-            gene_index = int(gene[1])
-            sharp_indicator = f'{gene_name}-{gene_index}-{gene_timeperiod}'
-            dataframe[sharp_indicator] = getattr(ta, gene_name)(
-                dataframe,
-                timeperiod=gene_timeperiod,
-            ).iloc[:, gene_index]
-            return normalize(ta.SMA(dataframe[sharp_indicator].fillna(0), TREND_CHECK_CANDLES))
+    result = None
+    # For Pattern Recognations
+    if gene_len == 1:
+        # print('gene_len == 1\t', indicator)
+        result = getattr(ta, gene_name)(
+            dataframe
+        )
+        return normalize(result)
+    elif gene_len == 2:
+        # print('gene_len == 2\t', indicator)
+        gene_timeperiod = int(gene[1])
+        result = getattr(ta, gene_name)(
+            dataframe,
+            timeperiod=gene_timeperiod,
+        )
+        return normalize(result)
+    # For
+    elif gene_len == 3:
+        # print('gene_len == 3\t', indicator)
+        gene_timeperiod = int(gene[2])
+        gene_index = int(gene[1])
+        result = getattr(ta, gene_name)(
+            dataframe,
+            timeperiod=gene_timeperiod,
+        ).iloc[:, gene_index]
+        return normalize(result)
+    # For trend operators(MA-5-SMA-4)
+    elif gene_len == 4:
+        # print('gene_len == 4\t', indicator)
+        gene_timeperiod = int(gene[1])
+        sharp_indicator = f'{gene_name}-{gene_timeperiod}'
+        dataframe[sharp_indicator] = getattr(ta, gene_name)(
+            dataframe,
+            timeperiod=gene_timeperiod,
+        )
+        return normalize(ta.SMA(dataframe[sharp_indicator].fillna(0), TREND_CHECK_CANDLES))
+    # For trend operators(STOCH-0-4-SMA-4)
+    elif gene_len == 5:
+        # print('gene_len == 5\t', indicator)
+        gene_timeperiod = int(gene[2])
+        gene_index = int(gene[1])
+        sharp_indicator = f'{gene_name}-{gene_index}-{gene_timeperiod}'
+        dataframe[sharp_indicator] = getattr(ta, gene_name)(
+            dataframe,
+            timeperiod=gene_timeperiod,
+        ).iloc[:, gene_index]
+        return normalize(ta.SMA(dataframe[sharp_indicator].fillna(0), TREND_CHECK_CANDLES))
 
 
 def condition_generator(dataframe, operator, indicator, crossed_indicator, real_num):
@@ -541,8 +541,6 @@ class GodStraNew(IStrategy):
 
     def populate_buy_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
 
-        conditions = list()
-
         # TODO: Its not dry code!
         buy_indicator = self.buy_indicator0.value
         buy_crossed_indicator = self.buy_crossed_indicator0.value
@@ -555,7 +553,7 @@ class GodStraNew(IStrategy):
             buy_crossed_indicator,
             buy_real_num
         )
-        conditions.append(condition)
+        conditions = [condition]
         # backup
         buy_indicator = self.buy_indicator1.value
         buy_crossed_indicator = self.buy_crossed_indicator1.value
@@ -595,7 +593,6 @@ class GodStraNew(IStrategy):
 
     def populate_sell_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
 
-        conditions = list()
         # TODO: Its not dry code!
         sell_indicator = self.sell_indicator0.value
         sell_crossed_indicator = self.sell_crossed_indicator0.value
@@ -608,8 +605,7 @@ class GodStraNew(IStrategy):
             sell_crossed_indicator,
             sell_real_num
         )
-        conditions.append(condition)
-
+        conditions = [condition]
         sell_indicator = self.sell_indicator1.value
         sell_crossed_indicator = self.sell_crossed_indicator1.value
         sell_operator = self.sell_operator1.value

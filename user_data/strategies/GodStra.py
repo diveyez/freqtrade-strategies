@@ -77,8 +77,7 @@ class GodStra(IStrategy):
 
     def dna_size(self, dct: dict):
         def int_from_str(st: str):
-            str_int = ''.join([d for d in st if d.isdigit()])
-            if str_int:
+            if str_int := ''.join([d for d in st if d.isdigit()]):
                 return int(str_int)
             return -1  # in case if the parameter somehow doesn't have index
         return len({int_from_str(digit) for digit in dct.keys()})
@@ -93,7 +92,7 @@ class GodStra(IStrategy):
         return dataframe
 
     def populate_buy_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        conditions = list()
+        conditions = []
         # /5: Cuz We have 5 Group of variables inside buy_param
         for i in range(self.dna_size(self.buy_params)):
 
@@ -136,7 +135,7 @@ class GodStra(IStrategy):
         return dataframe
 
     def populate_sell_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        conditions = list()
+        conditions = []
         for i in range(self.dna_size(self.sell_params)):
             OPR = self.sell_params[f'sell-oper-{i}']
             IND = self.sell_params[f'sell-indicator-{i}']
